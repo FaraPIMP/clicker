@@ -150,13 +150,34 @@ app.get('/api/profile', authMiddleware, async (req, res) => {
 app.get('/api/players', authMiddleware, async (req, res) => {
     try {
         const [users] = await pool.execute(
-            'SELECT id, username, elo_rating, games_played, games_won, games_lost FROM users WHERE id != ? ORDER BY elo_rating DESC',
+            `SELECT id, username, elo_rating, games_played, games_won, games_lost,
+                    TIMESTAMPDIFF(SECOND, last_activity, NOW()) as seconds_since_activity
+             FROM users WHERE id != ? ORDER BY elo_rating DESC`,
             [req.userId]
         );
-        res.json(users);
+        
+        const usersWithStatus = users.map(user => ({
+            ...user,
+            isOnline: user.seconds_since_activity !== null && user.seconds_since_activity < 60
+        }));
+        
+        res.json(usersWithStatus);
     } catch (error) {
         console.error('Players list error:', error);
         res.status(500).json({ error: 'Ошибка получения списка игроков' });
+    }
+});
+
+app.post('/api/heartbeat', authMiddleware, async (req, res) => {
+    try {
+        await pool.execute(
+            'UPDATE users SET last_activity = NOW() WHERE id = ?',
+            [req.userId]
+        );
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Heartbeat error:', error);
+        res.status(500).json({ error: 'Ошибка обновления активности' });
     }
 });
 

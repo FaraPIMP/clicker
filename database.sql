@@ -14,8 +14,10 @@ CREATE TABLE IF NOT EXISTS users (
     games_lost INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_login TIMESTAMP NULL,
+    last_activity TIMESTAMP NULL,
     INDEX idx_elo (elo_rating),
-    INDEX idx_username (username)
+    INDEX idx_username (username),
+    INDEX idx_activity (last_activity)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Таблица турниров

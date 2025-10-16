@@ -56,6 +56,20 @@ function animateDarkVeil() {
 
 animateDarkVeil();
 
+async function sendHeartbeat() {
+    try {
+        await fetch(`${API_URL}/heartbeat`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+    } catch (error) {
+        console.error('Heartbeat error:', error);
+    }
+}
+
+sendHeartbeat();
+setInterval(sendHeartbeat, 30000);
+
 document.getElementById('username').textContent = currentUser.username || 'Игрок';
 document.getElementById('user-elo').textContent = currentUser.elo || 1000;
 document.getElementById('user-games').textContent = currentUser.gamesPlayed || 0;
@@ -319,7 +333,10 @@ function displayPlayers(players) {
     playersList.innerHTML = players.map(player => `
         <div class="player-card">
             <div class="player-info-card">
-                <div class="player-name">${player.username}</div>
+                <div class="player-name">
+                    ${player.isOnline ? '<span class="online-indicator"></span>' : '<span class="offline-indicator"></span>'}
+                    ${player.username}
+                </div>
                 <div class="player-stats">
                     <span><span class="stat-label">ELO:</span> ${player.elo_rating}</span>
                     <span><span class="stat-label">Игр:</span> ${player.games_played}</span>
@@ -348,8 +365,8 @@ document.getElementById('filter-similar').addEventListener('click', () => {
 
 document.getElementById('filter-online').addEventListener('click', () => {
     setFilter('online');
-    // В будущем можно добавить real-time статус
-    displayPlayers(allPlayers);
+    const filtered = allPlayers.filter(p => p.isOnline);
+    displayPlayers(filtered);
 });
 
 function setFilter(filter) {
