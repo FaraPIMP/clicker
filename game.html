@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Счетчик Кликов - Игра</title>
+    <link rel="stylesheet" href="game-style.css">
+</head>
+<body>
+    <canvas id="main-dark-veil-canvas"></canvas>
+    
+    <!-- User Info Panel -->
+    <div class="user-panel">
+        <div class="user-info">
+            <h3 id="username">Player</h3>
+            <p>ELO: <span id="user-elo">1000</span></p>
+            <p>Игры: <span id="user-games">0</span></p>
+        </div>
+        <button id="logout-btn" class="small-btn">Выход</button>
+    </div>
+    
+    <!-- Main Menu -->
+    <div id="main-menu" class="menu-container">
+        <h1 class="title">Счетчик Кликов</h1>
+        
+        <div class="menu-buttons">
+            <button id="practice-btn" class="menu-btn">Тренировка</button>
+            <button id="ranked-btn" class="menu-btn">Рейтинговая игра</button>
+            <button id="leaderboard-btn" class="menu-btn">Таблица лидеров</button>
+        </div>
+    </div>
+    
+    <!-- Practice Mode (original clicker) -->
+    <div id="practice-screen" class="screen" style="display: none;">
+        <button class="back-btn" onclick="showMainMenu()">← Назад</button>
+        
+        <div class="counter-app">
+            <h1 class="counter-app__title">Счетчик Кликов</h1>
+            
+            <div class="mode-switch">
+                <button id="free-mode-btn" class="mode-btn active">Свободный режим</button>
+                <button id="test-mode-btn" class="mode-btn">Тестовый режим</button>
+            </div>
+            
+            <div class="cps-display">
+                <span class="cps-label">CPS:</span>
+                <span class="cps-value" id="cps-value">0.00</span>
+            </div>
+            
+            <div class="test-status" id="test-status"></div>
+            
+            <div class="counter-app__value" id="counter">0</div>
+            
+            <div id="free-mode-buttons">
+                <button class="counter-app__button" id="increment-free">Кликай!</button>
+                <button class="counter-app__button counter-app__button--secondary" id="reset-free">Сброс</button>
+            </div>
+            
+            <div id="test-mode-buttons" style="display: none;">
+                <button class="counter-app__button" id="start-test">Начать тест</button>
+                <button class="counter-app__button" id="increment-test" disabled>Кликай!</button>
+            </div>
+            
+            <div class="volume-control">
+                <label for="volume-slider">🔊</label>
+                <input type="range" id="volume-slider" min="0" max="100" value="30">
+                <button id="play-pause-btn" class="play-pause-btn">▶</button>
+            </div>
+        </div>
+        
+        <svg id="lightning-svg"></svg>
+        <audio id="rain-sound" loop>
+            <source src="https://assets.mixkit.co/active_storage/sfx/2390/2390-preview.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+    
+    <!-- Player Selection Screen -->
+    <div id="player-selection-screen" class="screen" style="display: none;">
+        <button class="back-btn" onclick="showMainMenu()">← Назад</button>
+        
+        <div class="player-selection-container">
+            <h2>Выберите соперника</h2>
+            <div class="filter-controls">
+                <button id="filter-all" class="filter-btn active">Все игроки</button>
+                <button id="filter-similar" class="filter-btn">Похожий ELO (±200)</button>
+                <button id="filter-online" class="filter-btn">Онлайн</button>
+            </div>
+            <div class="players-list" id="players-list">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Загрузка игроков...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Matchmaking Screen (waiting for opponent to accept) -->
+    <div id="matchmaking-screen" class="screen" style="display: none;">
+        <button class="back-btn" onclick="cancelMatchmaking()">← Отмена</button>
+        
+        <div class="matchmaking-box">
+            <h2>Ожидание принятия вызова...</h2>
+            <div class="spinner"></div>
+            <p id="matchmaking-status">Игрок <span id="challenged-player-name"></span> получил ваш вызов</p>
+        </div>
+    </div>
+    
+    <!-- Challenge Received Screen -->
+    <div id="challenge-screen" class="screen" style="display: none;">
+        <div class="challenge-box">
+            <h2>🎮 Вызов на дуэль!</h2>
+            <p class="challenge-text">
+                <span id="challenger-name">Player</span> 
+                <span class="challenge-elo">(ELO: <span id="challenger-elo">1000</span>)</span>
+                <br>бросает вам вызов!
+            </p>
+            <div class="challenge-buttons">
+                <button class="accept-btn" onclick="acceptChallenge()">✓ Принять</button>
+                <button class="decline-btn" onclick="declineChallenge()">✗ Отклонить</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Battle Screen -->
+    <div id="battle-screen" class="screen" style="display: none;">
+        <div class="battle-container">
+            <div class="battle-header">
+                <div class="player-info">
+                    <h3 id="battle-player1-name">Player 1</h3>
+                    <p>ELO: <span id="battle-player1-elo">1000</span></p>
+                </div>
+                <div class="timer-container">
+                    <div id="battle-timer">10</div>
+                    <div id="battle-status">Приготовьтесь...</div>
+                </div>
+                <div class="player-info">
+                    <h3 id="battle-player2-name">Player 2</h3>
+                    <p>ELO: <span id="battle-player2-elo">1000</span></p>
+                </div>
+            </div>
+            
+            <div class="battle-scores">
+                <div class="score-box">
+                    <div class="score-value" id="battle-score1">0</div>
+                    <div class="score-label">Ваши клики</div>
+                </div>
+                <div class="vs">VS</div>
+                <div class="score-box">
+                    <div class="score-value" id="battle-score2">0</div>
+                    <div class="score-label">Клики соперника</div>
+                </div>
+            </div>
+            
+            <button class="battle-click-btn" id="battle-click-btn" disabled>КЛИКАЙ!</button>
+        </div>
+        
+        <svg id="battle-lightning-svg"></svg>
+    </div>
+    
+    <!-- Results Screen -->
+    <div id="results-screen" class="screen" style="display: none;">
+        <div class="results-box">
+            <h1 id="result-title">Победа!</h1>
+            <div class="result-stats">
+                <p>Ваши клики: <span id="result-your-clicks">0</span></p>
+                <p>Клики соперника: <span id="result-opponent-clicks">0</span></p>
+                <p class="elo-change" id="elo-change">+25 ELO</p>
+            </div>
+            <button class="menu-btn" onclick="showMainMenu()">В главное меню</button>
+        </div>
+    </div>
+    
+    <!-- Leaderboard Screen -->
+    <div id="leaderboard-screen" class="screen" style="display: none;">
+        <button class="back-btn" onclick="showMainMenu()">← Назад</button>
+        
+        <div class="leaderboard-container">
+            <h2>Таблица лидеров</h2>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Игрок</th>
+                        <th>ELO</th>
+                        <th>Игры</th>
+                        <th>Победы</th>
+                        <th>Поражения</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

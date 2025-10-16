@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Счетчик Кликов</title>
+    <link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+    <canvas id="dark-veil-canvas"></canvas>
+    
+    <div class="auth-container">
+        <div class="auth-box">
+            <h1 class="auth-title">Счетчик Кликов</h1>
+            <p class="auth-subtitle">Соревнуйтесь с игроками по всему миру</p>
+            
+            <div id="login-form" class="form-container">
+                <h2>Вход</h2>
+                <input type="text" id="login-username" placeholder="Имя пользователя" autocomplete="username">
+                <input type="password" id="login-password" placeholder="Пароль" autocomplete="current-password">
+                <button id="login-btn" class="primary-btn">Войти</button>
+                <p class="switch-text">Нет аккаунта? <a href="#" id="show-register">Регистрация</a></p>
+            </div>
+            
+            <div id="register-form" class="form-container" style="display: none;">
+                <h2>Регистрация</h2>
+                <input type="text" id="register-username" placeholder="Имя пользователя (3-50 символов)" autocomplete="username">
+                <input type="password" id="register-password" placeholder="Пароль (минимум 6 символов)" autocomplete="new-password">
+                <button id="register-btn" class="primary-btn">Зарегистрироваться</button>
+                <p class="switch-text">Уже есть аккаунт? <a href="#" id="show-login">Войти</a></p>
+            </div>
+            
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+    
+    <script src="auth.js"></script>
+</body>
+</html>
