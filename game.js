@@ -733,9 +733,12 @@ async function loadLeaderboard() {
         
         leaderboard.forEach((player, index) => {
             const row = tbody.insertRow();
+            const onlineStatus = player.isOnline 
+                ? '<span class="online-indicator"></span>' 
+                : '<span class="offline-indicator"></span>';
             row.innerHTML = `
                 <td>${index + 1}</td>
-                <td>${player.username}</td>
+                <td>${onlineStatus} ${player.username}</td>
                 <td>${player.elo_rating}</td>
                 <td>${player.games_played}</td>
                 <td>${player.games_won}</td>

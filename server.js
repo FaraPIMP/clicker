@@ -184,9 +184,17 @@ app.post('/api/heartbeat', authMiddleware, async (req, res) => {
 app.get('/api/leaderboard', async (req, res) => {
     try {
         const [users] = await pool.execute(
-            'SELECT username, elo_rating, games_played, games_won, games_lost FROM users ORDER BY elo_rating DESC LIMIT 100'
+            `SELECT username, elo_rating, games_played, games_won, games_lost,
+                    TIMESTAMPDIFF(SECOND, last_activity, NOW()) as seconds_since_activity
+             FROM users ORDER BY elo_rating DESC LIMIT 100`
         );
-        res.json(users);
+        
+        const usersWithStatus = users.map(user => ({
+            ...user,
+            isOnline: user.seconds_since_activity !== null && user.seconds_since_activity < 60
+        }));
+        
+        res.json(usersWithStatus);
     } catch (error) {
         console.error('Leaderboard error:', error);
         res.status(500).json({ error: 'Ошибка получения таблицы лидеров' });
