@@ -25,11 +25,14 @@ body {
     position: fixed;
     top: 20px;
     right: 20px;
-    background: rgba(20, 10, 40, 0.85);
-    border: 2px solid rgba(138, 43, 226, 0.5);
-    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(20, 10, 40, 0.7), rgba(30, 15, 50, 0.6));
+    border: 2px solid rgba(138, 43, 226, 0.3);
+    border-radius: 18px;
     padding: 20px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 
+        0 8px 32px rgba(138, 43, 226, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     z-index: 100;
 }
 
@@ -51,17 +54,34 @@ body {
 
 .small-btn {
     margin-top: 10px;
-    padding: 8px 16px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(138, 43, 226, 0.3);
+    padding: 10px 20px;
+    border: 1.5px solid rgba(138, 43, 226, 0.3);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(106, 90, 205, 0.1));
     color: #e0d4ff;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(15px) saturate(180%);
+    box-shadow: 
+        0 4px 16px rgba(138, 43, 226, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    font-weight: 500;
 }
 
 .small-btn:hover {
-    background: rgba(138, 43, 226, 0.5);
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.25), rgba(106, 90, 205, 0.2));
+    border-color: rgba(138, 43, 226, 0.5);
+    box-shadow: 
+        0 6px 24px rgba(138, 43, 226, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.small-btn:active {
+    transform: translateY(0);
+    box-shadow: 
+        0 2px 12px rgba(138, 43, 226, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .screen {
@@ -97,40 +117,89 @@ body {
 
 .menu-btn {
     padding: 20px 40px;
-    border: 2px solid rgba(138, 43, 226, 0.5);
-    border-radius: 15px;
-    background: rgba(20, 10, 40, 0.85);
+    border: 2px solid rgba(138, 43, 226, 0.3);
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(106, 90, 205, 0.1));
     color: #e0d4ff;
     font-size: 1.3rem;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 
+        0 8px 32px rgba(138, 43, 226, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.menu-btn:hover::before {
+    left: 100%;
 }
 
 .menu-btn:hover {
-    background: linear-gradient(135deg, #8a2be2, #6a5acd);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(138, 43, 226, 0.5);
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(106, 90, 205, 0.25));
+    transform: translateY(-3px) scale(1.02);
+    border-color: rgba(138, 43, 226, 0.6);
+    box-shadow: 
+        0 12px 40px rgba(138, 43, 226, 0.4),
+        0 0 60px rgba(138, 43, 226, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.menu-btn:active {
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 
+        0 4px 20px rgba(138, 43, 226, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .back-btn {
     position: absolute;
     top: 20px;
     left: 20px;
-    padding: 10px 20px;
-    border: 2px solid rgba(138, 43, 226, 0.5);
-    border-radius: 10px;
-    background: rgba(20, 10, 40, 0.85);
+    padding: 12px 24px;
+    border: 2px solid rgba(138, 43, 226, 0.3);
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(106, 90, 205, 0.1));
     color: #e0d4ff;
     font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 
+        0 4px 20px rgba(138, 43, 226, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .back-btn:hover {
-    background: rgba(138, 43, 226, 0.5);
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.25), rgba(106, 90, 205, 0.2));
+    border-color: rgba(138, 43, 226, 0.5);
+    box-shadow: 
+        0 6px 28px rgba(138, 43, 226, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateX(-3px);
+}
+
+.back-btn:active {
+    transform: translateX(-1px);
+    box-shadow: 
+        0 2px 12px rgba(138, 43, 226, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Practice Mode (from original clicker) */
@@ -244,30 +313,60 @@ body {
 .counter-app__button {
     padding: 20px 50px;
     margin: 10px;
-    border: none;
-    border-radius: 15px;
-    background: linear-gradient(135deg, #8a2be2, #6a5acd);
+    border: 2px solid rgba(138, 43, 226, 0.3);
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(106, 90, 205, 0.15));
     color: white;
     font-size: 1.5rem;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 6px 20px rgba(138, 43, 226, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 
+        0 8px 32px rgba(138, 43, 226, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
     position: relative;
+    overflow: hidden;
+}
+
+.counter-app__button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.counter-app__button:hover:not(:disabled)::before {
+    left: 100%;
 }
 
 .counter-app__button:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(138, 43, 226, 0.7);
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.35), rgba(106, 90, 205, 0.3));
+    border-color: rgba(138, 43, 226, 0.6);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 12px 40px rgba(138, 43, 226, 0.5),
+        0 0 60px rgba(138, 43, 226, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .counter-app__button:active:not(:disabled) {
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(0.98);
+    box-shadow: 
+        0 4px 20px rgba(138, 43, 226, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .counter-app__button:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(106, 90, 205, 0.08));
+    border-color: rgba(138, 43, 226, 0.15);
 }
 
 .counter-app__button--secondary {
@@ -372,33 +471,48 @@ body {
 
 .filter-btn {
     padding: 12px 24px;
-    border: 2px solid rgba(138, 43, 226, 0.4);
-    border-radius: 10px;
-    background: rgba(20, 10, 40, 0.85);
+    border: 2px solid rgba(138, 43, 226, 0.3);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(106, 90, 205, 0.08));
     color: #b794f6;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 1rem;
+    backdrop-filter: blur(15px) saturate(180%);
+    box-shadow: 
+        0 4px 16px rgba(138, 43, 226, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .filter-btn.active {
-    background: linear-gradient(135deg, #8a2be2, #6a5acd);
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.4), rgba(106, 90, 205, 0.35));
     color: white;
-    border-color: #8a2be2;
+    border-color: rgba(138, 43, 226, 0.6);
+    box-shadow: 
+        0 6px 24px rgba(138, 43, 226, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .filter-btn:hover:not(.active) {
-    background: rgba(138, 43, 226, 0.3);
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(106, 90, 205, 0.15));
+    border-color: rgba(138, 43, 226, 0.5);
+    box-shadow: 
+        0 6px 20px rgba(138, 43, 226, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .players-list {
-    background: rgba(20, 10, 40, 0.85);
-    border: 2px solid rgba(138, 43, 226, 0.5);
-    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(20, 10, 40, 0.7), rgba(30, 15, 50, 0.6));
+    border: 2px solid rgba(138, 43, 226, 0.3);
+    border-radius: 24px;
     padding: 20px;
     max-height: 500px;
     overflow-y: auto;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 
+        0 8px 32px rgba(138, 43, 226, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .loading-spinner {
@@ -407,21 +521,28 @@ body {
 }
 
 .player-card {
-    background: rgba(0, 0, 0, 0.3);
-    border: 2px solid rgba(138, 43, 226, 0.3);
-    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.08), rgba(106, 90, 205, 0.05));
+    border: 2px solid rgba(138, 43, 226, 0.25);
+    border-radius: 16px;
     padding: 20px;
     margin-bottom: 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(15px) saturate(180%);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .player-card:hover {
-    border-color: #8a2be2;
-    background: rgba(138, 43, 226, 0.1);
+    border-color: rgba(138, 43, 226, 0.5);
+    background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(106, 90, 205, 0.1));
     transform: translateX(5px);
+    box-shadow: 
+        0 6px 24px rgba(138, 43, 226, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .player-info-card {
