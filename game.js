@@ -119,29 +119,9 @@ const testStatus = document.getElementById('test-status');
 const freeModeButtons = document.getElementById('free-mode-buttons');
 const testModeButtons = document.getElementById('test-mode-buttons');
 
-const rainSound = document.getElementById('rain-sound');
-const volumeSlider = document.getElementById('volume-slider');
-const playPauseBtn = document.getElementById('play-pause-btn');
-let isPlaying = false;
-
 function initPracticeMode() {
-    rainSound.volume = volumeSlider.value / 100;
+    // Initialization if needed
 }
-
-volumeSlider.addEventListener('input', () => {
-    rainSound.volume = volumeSlider.value / 100;
-});
-
-playPauseBtn.addEventListener('click', () => {
-    if (isPlaying) {
-        rainSound.pause();
-        playPauseBtn.textContent = '▶';
-    } else {
-        rainSound.play();
-        playPauseBtn.textContent = '⏸';
-    }
-    isPlaying = !isPlaying;
-});
 
 document.getElementById('free-mode-btn').addEventListener('click', () => {
     isFreeMode = true;

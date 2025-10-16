@@ -138,9 +138,6 @@ document.getElementById('register-btn').addEventListener('click', async () => {
     }
 });
 
-}
-});
-
 document.querySelectorAll('input').forEach(input => {
     input.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
