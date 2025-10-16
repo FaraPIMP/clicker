@@ -46,7 +46,7 @@ function animateDarkVeil() {
 
 animateDarkVeil();
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'http://193.42.124.100/api';
 
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
