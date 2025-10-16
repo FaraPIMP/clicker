@@ -168,57 +168,9 @@ clicker/
 - `POST /api/matches/:id/clicks` — Обновить клики
 - `POST /api/matches/:id/finish` — Завершить матч
 
-> 📖 Подробное описание API в [CODE_EXPLANATION.md](CODE_EXPLANATION.md)
 
 ---
 
-## 🚀 Деплой на продакшн
-
-### С использованием PM2
-
-1. **Установите PM2**
-```bash
-npm install -g pm2
-```
-
-2. **Запустите приложение**
-```bash
-pm2 start server.js --name clicker-game
-```
-
-3. **Настройте автозапуск**
-```bash
-pm2 startup
-pm2 save
-```
-
-4. **Полезные команды**
-```bash
-pm2 status              # Статус
-pm2 restart clicker-game # Перезапуск
-pm2 logs clicker-game    # Логи
-pm2 monit               # Мониторинг
-```
-
-### С Nginx (рекомендуется)
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
----
 
 ## 🔐 Безопасность
 
@@ -259,20 +211,6 @@ winner_id, status, player1_elo_change, player2_elo_change
 
 ---
 
-## 💡 Возможности для улучшения
-
-- [ ] WebSockets вместо polling
-- [ ] Онлайн статус игроков
-- [ ] Чат между игроками
-- [ ] Система турниров
-- [ ] Достижения и награды
-- [ ] История всех матчей
-- [ ] Настройки профиля
-- [ ] Аватары
-- [ ] Друзья и приглашения
-- [ ] Мобильная версия
-
----
 
 ## 🐛 Известные проблемы
 
