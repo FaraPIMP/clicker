@@ -657,6 +657,17 @@ async function endBattle() {
     }
     
     try {
+        await fetch(`${API_URL}/matches/${currentMatchId}/clicks`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ clicks: battleClicks })
+        });
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         const response = await fetch(`${API_URL}/matches/${currentMatchId}/finish`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
@@ -665,10 +676,13 @@ async function endBattle() {
         const result = await response.json();
         
         const isPlayer1 = result.player1_id === currentUser.id;
+        const yourClicks = isPlayer1 ? result.player1_clicks : result.player2_clicks;
+        const opponentFinalClicks = isPlayer1 ? result.player2_clicks : result.player1_clicks;
         const yourEloChange = isPlayer1 ? result.player1EloChange : result.player2EloChange;
-        const won = (result.winnerId === currentUser.id);
+        const isDraw = result.isDraw;
+        const won = !isDraw && (result.winnerId === currentUser.id);
         
-        showResults(battleClicks, opponentClicks, yourEloChange, won);
+        showResults(yourClicks, opponentFinalClicks, yourEloChange, won, isDraw);
         
         currentUser.elo = isPlayer1 ? result.newPlayer1Elo : result.newPlayer2Elo;
         localStorage.setItem('user', JSON.stringify(currentUser));
@@ -711,10 +725,19 @@ function triggerBattleLightning() {
     }, 600);
 }
 
-function showResults(yourClicks, opponentClicks, eloChange, won) {
+function showResults(yourClicks, opponentClicks, eloChange, won, isDraw = false) {
     showScreen('results-screen');
     
-    document.getElementById('result-title').textContent = won ? 'ПОБЕДА!' : (yourClicks === opponentClicks ? 'НИЧЬЯ!' : 'ПОРАЖЕНИЕ');
+    let resultTitle;
+    if (isDraw) {
+        resultTitle = 'НИЧЬЯ!';
+    } else if (won) {
+        resultTitle = 'ПОБЕДА!';
+    } else {
+        resultTitle = 'ПОРАЖЕНИЕ';
+    }
+    
+    document.getElementById('result-title').textContent = resultTitle;
     document.getElementById('result-your-clicks').textContent = yourClicks;
     document.getElementById('result-opponent-clicks').textContent = opponentClicks;
     

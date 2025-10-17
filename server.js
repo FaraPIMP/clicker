@@ -485,33 +485,43 @@ app.post('/api/matches/:id/finish', authMiddleware, async (req, res) => {
         const player1Elo = player1[0].elo_rating;
         const player2Elo = player2[0].elo_rating;
         
+        let player1EloChange = 0;
+        let player2EloChange = 0;
+        let newPlayer1Elo = player1Elo;
+        let newPlayer2Elo = player2Elo;
+        
         const K = 32;
         const expectedP1 = 1 / (1 + Math.pow(10, (player2Elo - player1Elo) / 400));
         const expectedP2 = 1 / (1 + Math.pow(10, (player1Elo - player2Elo) / 400));
         
         let actualP1, actualP2;
-        if (winnerId === match.player1_id) {
-            actualP1 = 1;
-            actualP2 = 0;
-        } else if (winnerId === match.player2_id) {
-            actualP1 = 0;
-            actualP2 = 1;
-        } else {
+        if (winnerId === null) {
             actualP1 = 0.5;
             actualP2 = 0.5;
+        } else if (winnerId === match.player1_id) {
+            actualP1 = 1;
+            actualP2 = 0;
+        } else {
+            actualP1 = 0;
+            actualP2 = 1;
         }
         
-        const player1EloChange = Math.round(K * (actualP1 - expectedP1));
-        const player2EloChange = Math.round(K * (actualP2 - expectedP2));
+        player1EloChange = Math.round(K * (actualP1 - expectedP1));
+        player2EloChange = Math.round(K * (actualP2 - expectedP2));
         
-        const newPlayer1Elo = player1Elo + player1EloChange;
-        const newPlayer2Elo = player2Elo + player2EloChange;
+        newPlayer1Elo = player1Elo + player1EloChange;
+        newPlayer2Elo = player2Elo + player2EloChange;
         
         await connection.execute(
             'UPDATE matches SET winner_id = ?, player1_elo_change = ?, player2_elo_change = ?, status = "completed", completed_at = NOW() WHERE id = ?',
             [winnerId, player1EloChange, player2EloChange, matchId]
         );
         
+        const player1Won = winnerId === match.player1_id ? 1 : 0;
+        const player1Lost = winnerId === match.player2_id ? 1 : 0;
+        const player2Won = winnerId === match.player2_id ? 1 : 0;
+        const player2Lost = winnerId === match.player1_id ? 1 : 0;
+        
         await connection.execute(
             `UPDATE users SET 
                 elo_rating = ?, 
@@ -520,7 +530,7 @@ app.post('/api/matches/:id/finish', authMiddleware, async (req, res) => {
                 games_won = games_won + ?,
                 games_lost = games_lost + ?
              WHERE id = ?`,
-            [newPlayer1Elo, match.player1_clicks, winnerId === match.player1_id ? 1 : 0, winnerId === match.player2_id ? 1 : 0, match.player1_id]
+            [newPlayer1Elo, match.player1_clicks, player1Won, player1Lost, match.player1_id]
         );
         
         await connection.execute(
@@ -531,7 +541,7 @@ app.post('/api/matches/:id/finish', authMiddleware, async (req, res) => {
                 games_won = games_won + ?,
                 games_lost = games_lost + ?
              WHERE id = ?`,
-            [newPlayer2Elo, match.player2_clicks, winnerId === match.player2_id ? 1 : 0, winnerId === match.player1_id ? 1 : 0, match.player2_id]
+            [newPlayer2Elo, match.player2_clicks, player2Won, player2Lost, match.player2_id]
         );
         
         await connection.execute(
@@ -549,6 +559,11 @@ app.post('/api/matches/:id/finish', authMiddleware, async (req, res) => {
         res.json({
             message: 'Матч завершен',
             winnerId,
+            isDraw: winnerId === null,
+            player1_id: match.player1_id,
+            player2_id: match.player2_id,
+            player1_clicks: match.player1_clicks,
+            player2_clicks: match.player2_clicks,
             player1EloChange,
             player2EloChange,
             newPlayer1Elo,
