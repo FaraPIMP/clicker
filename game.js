@@ -70,6 +70,27 @@ async function sendHeartbeat() {
 sendHeartbeat();
 setInterval(sendHeartbeat, 30000);
 
+async function updateUserProfile() {
+    try {
+        const response = await fetch(`${API_URL}/me`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const userData = await response.json();
+        
+        currentUser.elo = userData.elo_rating;
+        currentUser.gamesPlayed = userData.games_played;
+        currentUser.gamesWon = userData.games_won;
+        currentUser.gamesLost = userData.games_lost;
+        
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        
+        document.getElementById('user-elo').textContent = currentUser.elo;
+        document.getElementById('user-games').textContent = currentUser.gamesPlayed;
+    } catch (error) {
+        console.error('Update profile error:', error);
+    }
+}
+
 document.getElementById('username').textContent = currentUser.username || 'Игрок';
 document.getElementById('user-elo').textContent = currentUser.elo || 1000;
 document.getElementById('user-games').textContent = currentUser.gamesPlayed || 0;
@@ -690,9 +711,7 @@ async function endBattle() {
         
         showResults(yourClicks, opponentFinalClicks, yourEloChange, won, isDraw);
         
-        currentUser.elo = isPlayer1 ? result.newPlayer1Elo : result.newPlayer2Elo;
-        localStorage.setItem('user', JSON.stringify(currentUser));
-        document.getElementById('user-elo').textContent = currentUser.elo;
+        await updateUserProfile();
     } catch (error) {
         console.error('End battle error:', error);
         alert('Ошибка завершения битвы');
