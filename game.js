@@ -559,11 +559,13 @@ async function startBattle(matchId) {
         const match = await response.json();
         
         const isPlayer1 = match.player1_id === currentUser.id;
+        const opponentName = isPlayer1 ? match.player2_name : match.player1_name;
+        const opponentElo = isPlayer1 ? match.player2_elo : match.player1_elo;
         
-        document.getElementById('battle-player1-name').textContent = isPlayer1 ? currentUser.username : match.player2_name;
-        document.getElementById('battle-player1-elo').textContent = isPlayer1 ? currentUser.elo : match.player2_elo;
-        document.getElementById('battle-player2-name').textContent = isPlayer1 ? match.player2_name : currentUser.username;
-        document.getElementById('battle-player2-elo').textContent = isPlayer1 ? match.player2_elo : currentUser.elo;
+        document.getElementById('battle-player1-name').textContent = currentUser.username;
+        document.getElementById('battle-player1-elo').textContent = currentUser.elo;
+        document.getElementById('battle-player2-name').textContent = opponentName || 'Соперник';
+        document.getElementById('battle-player2-elo').textContent = opponentElo || 1000;
         
         document.getElementById('battle-score1').textContent = '0';
         document.getElementById('battle-score2').textContent = '0';
@@ -675,12 +677,16 @@ async function endBattle() {
         
         const result = await response.json();
         
+        console.log('Match result:', result);
+        
         const isPlayer1 = result.player1_id === currentUser.id;
         const yourClicks = isPlayer1 ? result.player1_clicks : result.player2_clicks;
         const opponentFinalClicks = isPlayer1 ? result.player2_clicks : result.player1_clicks;
         const yourEloChange = isPlayer1 ? result.player1EloChange : result.player2EloChange;
         const isDraw = result.isDraw;
         const won = !isDraw && (result.winnerId === currentUser.id);
+        
+        console.log('Your ELO change:', yourEloChange);
         
         showResults(yourClicks, opponentFinalClicks, yourEloChange, won, isDraw);
         
@@ -742,8 +748,13 @@ function showResults(yourClicks, opponentClicks, eloChange, won, isDraw = false)
     document.getElementById('result-opponent-clicks').textContent = opponentClicks;
     
     const eloChangeElement = document.getElementById('elo-change');
-    eloChangeElement.textContent = (eloChange >= 0 ? '+' : '') + eloChange + ' ELO';
-    eloChangeElement.className = 'elo-change ' + (eloChange >= 0 ? 'positive' : 'negative');
+    if (eloChange !== undefined && eloChange !== null) {
+        eloChangeElement.textContent = (eloChange >= 0 ? '+' : '') + eloChange + ' ELO';
+        eloChangeElement.className = 'elo-change ' + (eloChange >= 0 ? 'positive' : 'negative');
+    } else {
+        eloChangeElement.textContent = '0 ELO';
+        eloChangeElement.className = 'elo-change';
+    }
 }
 
 async function loadLeaderboard() {

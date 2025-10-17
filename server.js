@@ -459,16 +459,42 @@ app.post('/api/matches/:id/finish', authMiddleware, async (req, res) => {
         await connection.beginTransaction();
         
         const [matches] = await connection.execute(
-            'SELECT * FROM matches WHERE id = ? AND status = "in_progress"',
+            'SELECT * FROM matches WHERE id = ?',
             [matchId]
         );
         
         if (matches.length === 0) {
             await connection.rollback();
-            return res.status(404).json({ error: 'Матч не найден или уже завершен' });
+            return res.status(404).json({ error: 'Матч не найден' });
         }
         
         const match = matches[0];
+        
+        if (match.status === 'completed') {
+            await connection.rollback();
+            
+            const [player1] = await connection.execute('SELECT elo_rating FROM users WHERE id = ?', [match.player1_id]);
+            const [player2] = await connection.execute('SELECT elo_rating FROM users WHERE id = ?', [match.player2_id]);
+            
+            return res.json({
+                message: 'Матч уже завершен',
+                winnerId: match.winner_id,
+                isDraw: match.winner_id === null,
+                player1_id: match.player1_id,
+                player2_id: match.player2_id,
+                player1_clicks: match.player1_clicks,
+                player2_clicks: match.player2_clicks,
+                player1EloChange: match.player1_elo_change,
+                player2EloChange: match.player2_elo_change,
+                newPlayer1Elo: player1[0].elo_rating,
+                newPlayer2Elo: player2[0].elo_rating
+            });
+        }
+        
+        if (match.status !== 'in_progress') {
+            await connection.rollback();
+            return res.status(400).json({ error: 'Матч в неправильном статусе' });
+        }
         
         let winnerId;
         if (match.player1_clicks > match.player2_clicks) {
