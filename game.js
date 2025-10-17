@@ -1,12 +1,44 @@
 const API_URL = 'http://193.42.124.100/api';
 let token = localStorage.getItem('token');
-let currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+let currentUser = { id: null, username: '', elo: 1000, gamesPlayed: 0 };
 let currentMatchId = null;
 let matchCheckInterval = null;
 
 if (!token) {
     window.location.href = 'index.html';
 }
+
+async function loadUserProfile() {
+    try {
+        const response = await fetch(`${API_URL}/profile`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to load profile');
+        }
+        
+        const userData = await response.json();
+        currentUser = {
+            id: userData.id,
+            username: userData.username,
+            elo: userData.elo_rating,
+            gamesPlayed: userData.games_played,
+            gamesWon: userData.games_won,
+            gamesLost: userData.games_lost
+        };
+        
+        document.getElementById('username').textContent = currentUser.username;
+        document.getElementById('user-elo').textContent = currentUser.elo;
+        document.getElementById('user-games').textContent = currentUser.gamesPlayed;
+    } catch (error) {
+        console.error('Load profile error:', error);
+        localStorage.removeItem('token');
+        window.location.href = 'index.html';
+    }
+}
+
+loadUserProfile();
 
 const canvas = document.getElementById('main-dark-veil-canvas');
 const ctx = canvas.getContext('2d');
@@ -71,33 +103,11 @@ sendHeartbeat();
 setInterval(sendHeartbeat, 30000);
 
 async function updateUserProfile() {
-    try {
-        const response = await fetch(`${API_URL}/me`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const userData = await response.json();
-        
-        currentUser.elo = userData.elo_rating;
-        currentUser.gamesPlayed = userData.games_played;
-        currentUser.gamesWon = userData.games_won;
-        currentUser.gamesLost = userData.games_lost;
-        
-        localStorage.setItem('user', JSON.stringify(currentUser));
-        
-        document.getElementById('user-elo').textContent = currentUser.elo;
-        document.getElementById('user-games').textContent = currentUser.gamesPlayed;
-    } catch (error) {
-        console.error('Update profile error:', error);
-    }
+    await loadUserProfile();
 }
-
-document.getElementById('username').textContent = currentUser.username || 'Игрок';
-document.getElementById('user-elo').textContent = currentUser.elo || 1000;
-document.getElementById('user-games').textContent = currentUser.gamesPlayed || 0;
 
 document.getElementById('logout-btn').addEventListener('click', () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
     window.location.href = 'index.html';
 });
 

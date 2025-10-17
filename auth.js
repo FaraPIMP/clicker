@@ -91,7 +91,6 @@ document.getElementById('login-btn').addEventListener('click', async () => {
 
         if (response.ok) {
             localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
             showMessage('Вход выполнен успешно!', 'success');
             setTimeout(() => {
                 window.location.href = 'game.html';
